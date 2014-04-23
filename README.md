@@ -44,6 +44,10 @@ App.VideoController = Ember.Controller.extend(
 
 The mixin can be applied to any Ember object.
 
+## Tracking Timings
+
+FIXME: docs
+
 ## Development
 
 This plugin is built with rake pipeline, which requires Ruby. To get
