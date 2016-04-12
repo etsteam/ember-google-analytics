@@ -3,6 +3,14 @@ Ember.GoogleAnalyticsTrackingMixin = Ember.Mixin.create({
     return window.ga && typeof window.ga === "function";
   },
 
+  logTrackingEnabled: function() {
+    return !!window.ENV && !!window.ENV.LOG_EVENT_TRACKING;
+  },
+
+  logTracking: function() {
+    Ember.Logger.info('Tracking Google Analytics event: ', arguments);
+  },
+
   trackPageView: function(page) {
     if (this.pageHasGa()) {
       if (!page) {
@@ -12,11 +20,9 @@ Ember.GoogleAnalyticsTrackingMixin = Ember.Mixin.create({
 
       ga('send', 'pageview', page);
     }
-  },
 
-  trackTiming: function(category, variable, value, label) {
-    if (this.pageHasGa()) {
-      ga('send', 'timing', category, variable, value, label);
+    if (this.logTrackingEnabled()) {
+      this.logTracking('pageview', page);
     }
   },
 
@@ -24,16 +30,21 @@ Ember.GoogleAnalyticsTrackingMixin = Ember.Mixin.create({
     if (this.pageHasGa()) {
       ga('send', 'event', category, action, label, value);
     }
+
+    if (this.logTrackingEnabled()) {
+      this.logTracking('event', category, action, label, value);
+    }
   }
 });
-Ember.Application.initializer({
+Ember.Application.instanceInitializer({
   name: "googleAnalytics",
 
-  initialize: function(container, application) {
-    var router = container.lookup('router:main');
+  initialize: function(instance) {
+    var router = instance.container.lookup('router:main');
     router.on('didTransition', function() {
       this.trackPageView(this.get('url'));
     });
   }
 });
+
 Ember.Router.reopen(Ember.GoogleAnalyticsTrackingMixin);
