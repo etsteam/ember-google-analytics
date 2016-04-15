@@ -14,6 +14,12 @@ Ember.GoogleAnalyticsTrackingMixin = Ember.Mixin.create({
     }
   },
 
+  trackTiming: function(category, variable, value, label) {
+    if (this.pageHasGa()) {
+      ga('send', 'timing', category, variable, value, label);
+    }
+  },
+
   trackEvent: function(category, action, label, value) {
     if (this.pageHasGa()) {
       ga('send', 'event', category, action, label, value);
@@ -30,5 +36,4 @@ Ember.Application.instanceInitializer({
     });
   }
 });
-
 Ember.Router.reopen(Ember.GoogleAnalyticsTrackingMixin);
